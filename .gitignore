@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+
+#qt personal config file
+cmda.pro.user
