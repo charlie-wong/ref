@@ -49,7 +49,7 @@ Colorize::Colorize(std::string *message, int cnt, displayColor *uScheme, int uCn
         colorizeScheme = new displayColor[7];
         colorCnt = 7;
 
-        colorizeScheme[0] = Underscore;
+        colorizeScheme[0] = ATD;
 
         colorizeScheme[1] = FRed;//红色
         colorizeScheme[2] = FGreen;//绿色
@@ -63,6 +63,7 @@ Colorize::~Colorize(void)
 {
     delete [] msg;
     delete [] colorizeScheme;
+    std::cout << "delete";
 }
 void Colorize::colorizeMsg(int begtip, int endtip, int begcmd, int endcmd)
 {

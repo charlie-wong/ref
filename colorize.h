@@ -1,3 +1,5 @@
+#ifndef CMDA_COLORIZE_H
+#define CMDA_COLORIZE_H
 /*色彩显示输出*/
 #include <string>
 
@@ -27,3 +29,4 @@ private:
     int colorCnt;
 };
 
+#endif

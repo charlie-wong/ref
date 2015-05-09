@@ -4,8 +4,11 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    colorize.cpp
+    colorize.cpp \
+    init.cpp
 
 HEADERS += \
-    colorize.h
+    colorize.h \
+    init.h \
+    debug.h
 
