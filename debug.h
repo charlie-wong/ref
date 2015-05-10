@@ -29,5 +29,5 @@ const int CMDA_SDCDMaxNum = 50;
 //绝对路径/基路径 的最大长度（最大字符个数）,包含'\0'
 const int CMDA_APMaxChNum = 1001;
 //当个文件名最大的字符个数（包括扩展名等），包含'\0'
-const int CMDA_FNMaxChNum = 251;
+const int CMDA_FNMaxChNum = 301;
 #endif

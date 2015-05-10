@@ -41,7 +41,7 @@ class SearchScheme
 public:
     SearchScheme(void);
     ~SearchScheme(void);
-    int find(SearchResult *result, int index, std::string what);//查找指定命令文件
+    int find(SearchResult *result, std::string what, int index = 0);//查找指定命令文件
 
     void setSheets(sheets *sh);
     void setLanguage(int lan);

@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include <sstream>
 #include <string>
+#include <stdlib.h>
 #include "debug.h"
 #include "sheets.h"
 #include "colorize.h"
@@ -190,11 +191,17 @@ int main(int argc, char **argv)
 
                 plan.setSheets(usr_en);
                 plan.setLanguage(userSearchLanguage);
-                int matchNum = plan.find(&result,index, what);//查找指定命令文件
-                if(matchNum)
+                int matchNum = plan.find(&result, what);//查找指定命令文件
+
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                for(int i =0;i<matchNum;i++)
                 {
-                    std::cout << "找到的文件：" << result.pathfile[index] << std::endl;
+                    std::cout << result.pathfile[i] << std::endl;
                 }
+
+                free(sys_en);
+                free(usr_en);
             }
             else if(userSearchLanguage == 1)
             {//中文

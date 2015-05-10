@@ -80,7 +80,6 @@ sheets* readFileList(const char *basePath)
 {
     DIR *dir;
     struct dirent *ptr;
-    char base[CMDA_APMaxChNum];
 
     if ((dir=opendir(basePath)) == NULL)
     {
@@ -91,10 +90,10 @@ sheets* readFileList(const char *basePath)
     sheets *buf = (sheets*)malloc(sizeof(sheets));
     if(!buf)
     {
-        perror("Can not get enough memory");
+        perror("Can not get enough memory for sheets\n");
         exit(1);
     }
-    memset((void*)buf,0,sizeof(sheets));
+    memset((void*)buf,'\0',sizeof(sheets));
     buf->curpath = basePath;
     buf->curfilescnt = 0;
     buf->childDirCnt = 0;
@@ -107,7 +106,17 @@ sheets* readFileList(const char *basePath)
         {
             if(buf->curfilescnt <= CMDA_SDFMaxNum)
             {
-                buf->curfiles[buf->curfilescnt] = ptr->d_name;
+                char *wlc_tmp = (char*)malloc(CMDA_FNMaxChNum*sizeof(char));
+                if(!wlc_tmp)
+                {
+                    perror("Can not get enough memory for file name\n");
+                    exit(1);
+                }
+                memset((void*)wlc_tmp,'\0',CMDA_FNMaxChNum*sizeof(char));
+
+                strcpy(wlc_tmp,ptr->d_name);
+
+                buf->curfiles[buf->curfilescnt] = wlc_tmp;
                 #ifdef CMDA_DEBUG_STD_COUT
                 printf("filename:\t%s\n",buf->curfiles[buf->curfilescnt]);
                 #endif
@@ -123,7 +132,17 @@ sheets* readFileList(const char *basePath)
         {
             if(buf->curfilescnt <= CMDA_SDFMaxNum)
             {
-                buf->curfiles[buf->curfilescnt] = ptr->d_name;
+                char *wlc_tmp = (char*)malloc(CMDA_FNMaxChNum*sizeof(char));
+                if(!wlc_tmp)
+                {
+                    perror("Can not get enough memory for file name\n");
+                    exit(1);
+                }
+                memset((void*)wlc_tmp,'\0',CMDA_FNMaxChNum*sizeof(char));
+
+                strcpy(wlc_tmp,ptr->d_name);
+
+                buf->curfiles[buf->curfilescnt] = wlc_tmp;
                 #ifdef CMDA_DEBUG_STD_COUT
                 printf("filename:slink:\t%s\n",buf->curfiles[buf->curfilescnt]);
                 #endif
@@ -137,7 +156,15 @@ sheets* readFileList(const char *basePath)
         }
         else if(ptr->d_type == 4)   //dir
         {
-            memset(base,'\0',sizeof(base));
+            char *base = (char*)malloc(CMDA_APMaxChNum*sizeof(char));
+            if(!base)
+            {
+                perror("Can not get enough memory for dir name\n");
+                exit(1);
+            }
+            memset((void*)base,'\0',CMDA_FNMaxChNum*sizeof(char));
+
+            //memset(base,'\0',sizeof(base));
             strcpy(base,basePath);
             strcat(base,ptr->d_name);
             strcat(base,"/");
@@ -203,40 +230,125 @@ void SearchScheme::setLanguage(int lan)
 {
     language = lan;
 }
-int SearchScheme::find(SearchResult *result, int index, std::string what)
+int SearchScheme::find(SearchResult *result, std::string what, int index)
 {
-    #ifdef CMDA_DEBUG_STD_COUT
-    std::cout << "当前搜索目录：" << db->curpath << std::endl;
-    std::cout << "搜索：" << what << std::endl;
-    #endif
     int howmuch = 0;//成功找到文件的个数
-    std::string f,d;
-    #ifdef CMDA_DEBUG_STD_COUT
-    std::cout << "目录文件列表如下：" << std::endl;
-    #endif
-    for(int i=0;i < db->curfilescnt;i++)
+
+    if(nextcnt == 0)
     {
         #ifdef CMDA_DEBUG_STD_COUT
-        std::cout << db->curfiles[i] << std::endl;
+        std::cout << "当前搜索目录：" << db->curpath << std::endl;
+        std::cout << "搜索：" << what << std::endl;
         #endif
-        f = db->curfiles[i];//候选文件
-        d = db->curpath;//当前目录
-        if(f == what)
+
+        std::string f;//候选文件
+        std::string d = db->curpath;//当前目录，首个路径不需要free
+        #ifdef CMDA_DEBUG_STD_COUT
+        std::cout << "目录文件列表如下：" << std::endl;
+        #endif
+
+        for(int i=0;i < db->curfilescnt;i++)
         {
-            result->pathfile[index] = d + f;
-            howmuch++;
-            break;//每个目录下的文件名是唯一的，找到后不再搜索
+            #ifdef CMDA_DEBUG_STD_COUT
+            std::cout << db->curfiles[i] << std::endl;
+            #endif
+            f = db->curfiles[i];//候选文件
+            free((void*)db->curfiles[i]);
+
+            if(f == what)
+            {
+                result->pathfile[index] = d + f;
+                howmuch++;
+                index++;
+                break;//每个目录下的文件名是唯一的，找到后不再搜索
+            }
+        }
+
+        //处理当前目录子目录
+        #ifdef CMDA_DEBUG_STD_COUT
+        std::cout << "子目录个数:" << db->childDirCnt << std::endl;
+        #endif
+        for(int i =0; i < db->childDirCnt; i++)
+        {
+            next = db->childDir[i];
+            nextcnt++;
+
+            if(index >= 9)
+            {
+                std::cout << "搜索：" << what << "超过 " << 9 << " 个\n";
+                break;
+            }
+            int k = find(result,what,index);//子目录下成功匹配的个数
+            howmuch += k;
+            if(k)
+            {
+                index++;//只有在子目录下匹配成功时，记k的值大于0时才加
+            }
+            free(db->childDir[i]);
+        }
+    }
+    else
+    {
+        #ifdef CMDA_DEBUG_STD_COUT
+        std::cout << "当前搜索目录：" << next->curpath << std::endl;
+        std::cout << "搜索：" << what << std::endl;
+        #endif
+
+        std::string f;//候选文件
+        std::string d = next->curpath;//当前目录
+        #ifdef CMDA_DEBUG_STD_COUT
+        std::cout << "目录文件列表如下：" << std::endl;
+        #endif
+
+        for(int i=0;i < next->curfilescnt;i++)
+        {
+            #ifdef CMDA_DEBUG_STD_COUT
+            std::cout << next->curfiles[i] << std::endl;
+            #endif
+            f = next->curfiles[i];//候选文件
+            free((void*)next->curfiles[i]);
+
+            if(f == what)
+            {
+                if(index >= 9)
+                {
+                    std::cout << "搜索：" << what << "超过 " << 9 << " 个\n";
+                    return howmuch;
+                }
+
+                result->pathfile[index] = d + f;
+                howmuch++;
+                index++;
+                break;//每个目录下的文件名是唯一的，找到后不再搜索
+            }
+        }
+
+        //处理当前目录子目录
+        #ifdef CMDA_DEBUG_STD_COUT
+        std::cout << "子目录个数:" << next->childDirCnt << std::endl;
+        #endif
+        for(int i =0; i < next->childDirCnt; i++)
+        {
+            next = next->childDir[i];
+            nextcnt++;
+
+            if(index >= 9)
+            {
+                std::cout << "搜索：" << what << "超过 " << 9 << " 个\n";
+                return howmuch;
+            }
+
+            int k = find(result,what,index);//子目录下成功匹配的个数
+            howmuch += k;
+            if(k)
+            {
+                index++;//只有在子目录下匹配成功时，记k的值大于0时才加
+            }
+
+            free(next->childDir[i]);
         }
     }
 
-    for(int i=0;i < db->childDirCnt;i++)
-    {
-        #ifdef CMDA_DEBUG_STD_COUT
-        std::cout << "子目录个数:" << db->childDirCnt << std::endl;
-        return 0;
-        #endif
-        howmuch += this->find(result,index,what);
-    }
     #ifdef CMDA_DEBUG_STD_COUT
     std::cout << "匹配个数：" << howmuch << std::endl;
     #endif
