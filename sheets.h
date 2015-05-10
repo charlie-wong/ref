@@ -53,6 +53,36 @@ private:
     int nextcnt;//搜索的目录计数
 };
 
+class SheetsBuf
+{
+public:
+    SheetsBuf(void)
+    {
+        line = NULL;
+        cnt = 0;
+    };
+    ~SheetsBuf(void)
+    {
+        switch(cnt)
+        {
+            case 0:
+            case 1:
+                {
+                    delete line;
+                    break;
+                }
+            case 2:
+            default:
+                {
+                    delete [] line;
+                    break;
+                }
+        };
+    }
+    std::string *line;
+    int cnt;
+};
+void showContent(std::string pathfile, SheetsBuf *sb);//逐行展示匹配成功的文件的内容，绝对路径
 
 
 #endif

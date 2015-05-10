@@ -1,4 +1,5 @@
 #include "sheets.h"
+#include "colorize.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,10 +8,14 @@
 #include <dirent.h>
 #include <dirent.h>
 #include <string>
+#include <sstream>
 #include <iostream>
+#include <fstream>
+
 extern std::string userSysName;
 extern std::string CMDA_sheets_path_usr_en_abs;
 extern std::string CMDA_sheets_path_usr_zh_abs;
+extern int MaxMatchNum;
 
 int system(const char *command);
 void *malloc(size_t size);
@@ -200,15 +205,16 @@ SearchResult::~SearchResult(void)
     {
         case 0:
         case 1:
-        {
-            delete pathfile;
-            break;
-        }
+            {
+                delete pathfile;
+                break;
+            }
         case 2:
         default:
-        {
-            delete [] pathfile;
-        }
+            {
+                delete [] pathfile;
+                break;
+            }
     };
 }
 
@@ -241,7 +247,7 @@ int SearchScheme::find(SearchResult *result, std::string what, int index)
         std::cout << "搜索：" << what << std::endl;
         #endif
 
-        std::string f;//候选文件
+        std::string f = "";//候选文件
         std::string d = db->curpath;//当前目录，首个路径不需要free
         #ifdef CMDA_DEBUG_STD_COUT
         std::cout << "目录文件列表如下：" << std::endl;
@@ -273,9 +279,19 @@ int SearchScheme::find(SearchResult *result, std::string what, int index)
             next = db->childDir[i];
             nextcnt++;
 
-            if(index >= 9)
+            if(index >= MaxMatchNum || index >= 9)
             {
-                std::cout << "搜索：" << what << "超过 " << 9 << " 个\n";
+                int x;
+                if( MaxMatchNum < 9)
+                {
+                    x = MaxMatchNum;
+                }
+                else
+                {
+                    x = 9;
+                }
+                std::cout << "搜索 '" << what << "' 超过 " << x << " 个\n";
+                std::cout << "使用：cmda -m9 -d9 " << what << " 以展示更多结果\n";
                 break;
             }
             int k = find(result,what,index);//子目录下成功匹配的个数
@@ -294,7 +310,7 @@ int SearchScheme::find(SearchResult *result, std::string what, int index)
         std::cout << "搜索：" << what << std::endl;
         #endif
 
-        std::string f;//候选文件
+        std::string f = "";//候选文件
         std::string d = next->curpath;//当前目录
         #ifdef CMDA_DEBUG_STD_COUT
         std::cout << "目录文件列表如下：" << std::endl;
@@ -310,9 +326,19 @@ int SearchScheme::find(SearchResult *result, std::string what, int index)
 
             if(f == what)
             {
-                if(index >= 9)
+                if(index >= MaxMatchNum || index >= 9)
                 {
-                    std::cout << "搜索：" << what << "超过 " << 9 << " 个\n";
+                    int x;
+                    if( MaxMatchNum < 9)
+                    {
+                        x = MaxMatchNum;
+                    }
+                    else
+                    {
+                        x = 9;
+                    }
+                    std::cout << "搜索 '" << what << "' 超过 " << x << " 个\n";
+                    std::cout << "使用：cmda -m9 -d9 " << what << " 以展示更多结果\n";
                     return howmuch;
                 }
 
@@ -332,9 +358,19 @@ int SearchScheme::find(SearchResult *result, std::string what, int index)
             next = next->childDir[i];
             nextcnt++;
 
-            if(index >= 9)
+            if(index >= MaxMatchNum || index >= 9)
             {
-                std::cout << "搜索：" << what << "超过 " << 9 << " 个\n";
+                int x;
+                if( MaxMatchNum < 9)
+                {
+                    x = MaxMatchNum;
+                }
+                else
+                {
+                    x = 9;
+                }
+                std::cout << "搜索 '" << what << "' 超过 " << x << " 个\n";
+                std::cout << "使用：cmda -m9 -d9 " << what << " 以展示更多结果\n";
                 return howmuch;
             }
 
@@ -480,4 +516,52 @@ bool init(void)
     }
 
     return true;
+}
+
+void showContent(std::string pathfile, SheetsBuf *sb)
+{
+    /* 按行读取文件
+     * ifstream 在 C++11 之前进阶手 const char *类型参数
+     * 在C++11 之后可以接受 std::string 等类型参数
+     */
+
+    char line[CMDA_MaxLineChNum]={0};//申请1024字节空间并将其初始化为 0
+    int lineNum = 0;
+    // 统计行数用
+    {
+        /*
+         * 为什么用seekg重置后无效？
+         * 暂时只能这样了！！！
+         */
+        std::ifstream fin(pathfile, std::ios::in);
+        while(fin.getline(line, CMDA_MaxLineChNum,'\n'))
+        {
+            lineNum++;//统计文件的行数
+        }
+        #ifdef CMDA_DEBUG_STD_COUT
+        std::cout << "文件行数：" << lineNum << std::endl;
+        #endif
+        fin.clear();
+        fin.close();
+    }
+
+    if(lineNum == 0)
+    {
+        return;//空文件，直接返回
+    }
+
+    sb->cnt = lineNum;
+    sb->line = new std::string[lineNum];
+    int i = 0;
+    std::ifstream fin(pathfile, std::ios::in);
+    while(fin.getline(line, CMDA_MaxLineChNum,'\n'))
+    {
+        sb->line[i] = line;
+        #ifdef CMDA_DEBUG_STD_COUT
+        std::cout << "第 " << i << " 行: " << sb->line[i] << std::endl;
+        #endif
+        i++;
+    }
+    fin.clear();
+    fin.close();
 }

@@ -2,7 +2,7 @@
 #define CMDA_DEBUG_H
 #include <string>
 
-#define CMDA_DEBUG_STD_COUT
+//#define CMDA_DEBUG_STD_COUT
 
 #ifdef __cplusplus
 #define C_LANGUAGE_BEGIN extern "C" {
@@ -30,4 +30,7 @@ const int CMDA_SDCDMaxNum = 50;
 const int CMDA_APMaxChNum = 1001;
 //当个文件名最大的字符个数（包括扩展名等），包含'\0'
 const int CMDA_FNMaxChNum = 301;
+//sheets文件中每行字符的最大个数
+const int CMDA_MaxLineChNum = 2048;
+
 #endif

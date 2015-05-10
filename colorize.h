@@ -18,6 +18,7 @@ public:
 
     colorAttribute& append(int i);
     void setCnt(int count);
+
     int *v;
     int cnt;//int值总个数
     int xcnt;//待填充索引

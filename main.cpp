@@ -15,6 +15,7 @@ extern int opterr;//对不在optstring中的选项字符,给出警告; 设置成
 extern int optopt;//对不在optstring中的选项字符, 将其放在此变量中
 
 int MaxMatchNum = 9;//一次搜索最多可以匹配的文件个数（man分9部分，so...)，可调用 -m/--maxnum 9 自定义
+int MaxDisplayNum = 1;//当有多个搜索匹配成功时，要显示的文件的个数，将其默认设置为展示1个文件
 std::string userSysName;
 int userSearchLanguage = 0;
 std::string CMDA_sheets_path_usr_en_abs;
@@ -22,7 +23,7 @@ std::string CMDA_sheets_path_usr_zh_abs;
 
 int main(int argc, char **argv)
 {
-    const char *optstring=":hHvVm:L:x:y::";
+    const char *optstring=":hHvVm:d:L:x:y::";
     /* 字符后跟一个冒号,表示该选项必须提供一个参数
      * 字符后跟两个冒号,表示该选项接受可选参数
      * optstring以冒号开始时:
@@ -36,6 +37,7 @@ int main(int argc, char **argv)
         {"version",no_argument,0,'v'},
         {"version",no_argument,0,'V'},
         {"maxnum",required_argument,0,'m'},
+        {"displaymaxnum",required_argument,0,'d'},
         {"language",required_argument,0,'L'},
         {"xarg",required_argument,0,'x'},
         {"yarg",optional_argument,0,'y'},
@@ -72,6 +74,10 @@ int main(int argc, char **argv)
                 std::cout << "\e[36mcmda -m 9\n";
                 std::cout << "\e[36mcmda --maxnum=9";
                 std::cout << "\e[0m\tThe Max matches num for a search(default is 9)\n";
+
+                std::cout << "\e[33mcmda -d 1\n";
+                std::cout << "\e[33mcmda --displaymaxnum=1";
+                std::cout << "\e[0m\tThe Max Display matched file num for a search(default is 1, should be [1-9])\n";
 
                 std::cout << "\e[35mcmda -v\n";
                 std::cout << "\e[56mcmda --version";
@@ -130,6 +136,25 @@ int main(int argc, char **argv)
                 }
                 break;
             }
+            case 'd':
+            {
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "-------" << MaxDisplayNum << std::endl;
+                #endif
+                std::string tmp_str(optarg);
+                std::stringstream tmp_ss(tmp_str);
+                tmp_ss >> MaxDisplayNum;
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "-----" << optarg << std::endl;
+                std::cout << "-------" << MaxDisplayNum << std::endl;
+                #endif
+                if(MaxDisplayNum > 9)
+                {
+                    std::cout << "-------" << MaxDisplayNum << std::endl;
+                    std::cout << "-d 的有效取值参数是：[1,9]\n";
+                }
+                break;
+            }
             case 'x':
             {
                 std::cout << "xarg:" << optarg << std::endl;
@@ -166,9 +191,8 @@ int main(int argc, char **argv)
     }
     //搜索前准备工作
     SearchResult result(MaxMatchNum);//搜索结果
-    SearchScheme plan;//搜索筛选计划
 
-    //搜索筛选
+    //处理用户给出的非参数选项
     if(optind != argc)
     {
         #ifdef CMDA_DEBUG_STD_COUT
@@ -179,50 +203,410 @@ int main(int argc, char **argv)
         std::cout << std::endl;
         #endif
 
-        int index = 0;
+        //搜索筛选
         std::string what;
         for(int i = optind;i < argc; i++)
         {
             what = argv[i];
             if(userSearchLanguage == 0)
             {//英文
+                int matchNum = 0;
+                int showedfilenum = 0;//以显示文件个数
+
+                //系统en目录查找
                 sheets *sys_en = readFileList(CMDA_sheets_path_sys_en.data());
-                sheets *usr_en = readFileList(CMDA_sheets_path_usr_en_abs.data());
-
-                plan.setSheets(usr_en);
-                plan.setLanguage(userSearchLanguage);
-                int matchNum = plan.find(&result, what);//查找指定命令文件
-
+                SearchScheme plan_sys_en;//sys_en搜索筛选计划
+                plan_sys_en.setLanguage(userSearchLanguage);
+                plan_sys_en.setSheets(sys_en);
+                matchNum = plan_sys_en.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
                 std::cout << "总共匹配的文件个数" << matchNum << std::endl;
                 std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
                 for(int i =0;i<matchNum;i++)
                 {
-                    std::cout << result.pathfile[i] << std::endl;
-                }
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@sys_en i = " << i << std::endl;
+                    std::cout << "sys_en已显示文件个数：" << showedfilenum+1 << std::endl;
+                    #endif
 
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(!buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
                 free(sys_en);
+
+                //用户en目录查找
+                sheets *usr_en = readFileList(CMDA_sheets_path_usr_en_abs.data());
+                SearchScheme plan_usr_en;//usr_en搜索筛选计划
+                plan_usr_en.setLanguage(userSearchLanguage);
+                plan_usr_en.setSheets(usr_en);
+                matchNum = plan_usr_en.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
+                for(int i =0;i<matchNum;i++)
+                {
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@usr_en i = " << i << std::endl;
+                    std::cout << "usr_en已显示文件个数：" << showedfilenum << std::endl;
+                    #endif
+
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(buf.cnt == 0 || !buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
                 free(usr_en);
             }
             else if(userSearchLanguage == 1)
             {//中文
+                int matchNum = 0;
+                int showedfilenum = 0;//以显示文件个数
+
+                //系统zh目录查找
                 sheets *sys_zh = readFileList(CMDA_sheets_path_sys_zh.data());
+                SearchScheme plan_sys_zh;//sys_zh搜索筛选计划
+                plan_sys_zh.setLanguage(userSearchLanguage);
+                plan_sys_zh.setSheets(sys_zh);
+                matchNum = plan_sys_zh.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
+                for(int i =0;i<matchNum;i++)
+                {
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@sys_en i = " << i << std::endl;
+                    std::cout << "sys_en已显示文件个数：" << showedfilenum+1 << std::endl;
+                    #endif
+
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(!buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
+                free(sys_zh);
+
+                //用户zh目录查找
                 sheets *usr_zh = readFileList(CMDA_sheets_path_usr_zh_abs.data());
+                SearchScheme plan_usr_zh;//usr_zh搜索筛选计划
+                plan_usr_zh.setLanguage(userSearchLanguage);
+                plan_usr_zh.setSheets(usr_zh);
+                matchNum = plan_usr_zh.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
+                for(int i =0;i<matchNum;i++)
+                {
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@usr_en i = " << i << std::endl;
+                    std::cout << "usr_en已显示文件个数：" << showedfilenum << std::endl;
+                    #endif
+
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(buf.cnt == 0 || !buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
+                free(usr_zh);
             }
             else if(userSearchLanguage == 2)
             {//中英
+                int matchNum = 0;
+                int showedfilenum = 0;//以显示文件个数
+
+                //系统en目录查找
                 sheets *sys_en = readFileList(CMDA_sheets_path_sys_en.data());
+                SearchScheme plan_sys_en;//sys_en搜索筛选计划
+                plan_sys_en.setLanguage(userSearchLanguage);
+                plan_sys_en.setSheets(sys_en);
+                matchNum = plan_sys_en.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
+                for(int i =0;i<matchNum;i++)
+                {
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@sys_en i = " << i << std::endl;
+                    std::cout << "sys_en已显示文件个数：" << showedfilenum+1 << std::endl;
+                    #endif
+
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(!buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
+                free(sys_en);
+
+                //用户en目录查找
                 sheets *usr_en = readFileList(CMDA_sheets_path_usr_en_abs.data());
+                SearchScheme plan_usr_en;//usr_en搜索筛选计划
+                plan_usr_en.setLanguage(userSearchLanguage);
+                plan_usr_en.setSheets(usr_en);
+                matchNum = plan_usr_en.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
+                for(int i =0;i<matchNum;i++)
+                {
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@usr_en i = " << i << std::endl;
+                    std::cout << "usr_en已显示文件个数：" << showedfilenum << std::endl;
+                    #endif
+
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(buf.cnt == 0 || !buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
+                free(usr_en);
+
+                //系统zh目录查找
                 sheets *sys_zh = readFileList(CMDA_sheets_path_sys_zh.data());
+                SearchScheme plan_sys_zh;//sys_zh搜索筛选计划
+                plan_sys_zh.setLanguage(userSearchLanguage);
+                plan_sys_zh.setSheets(sys_zh);
+                matchNum = plan_sys_zh.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
+                for(int i =0;i<matchNum;i++)
+                {
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@sys_en i = " << i << std::endl;
+                    std::cout << "sys_en已显示文件个数：" << showedfilenum+1 << std::endl;
+                    #endif
+
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(!buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
+                free(sys_zh);
+
+                //用户zh目录查找
                 sheets *usr_zh = readFileList(CMDA_sheets_path_usr_zh_abs.data());
+                SearchScheme plan_usr_zh;//usr_zh搜索筛选计划
+                plan_usr_zh.setLanguage(userSearchLanguage);
+                plan_usr_zh.setSheets(usr_zh);
+                matchNum = plan_usr_zh.find(&result, what);//查找指定命令文件
+                #ifdef CMDA_DEBUG_STD_COUT
+                std::cout << "总共匹配的文件个数" << matchNum << std::endl;
+                std::cout << "匹配的文件列表：\n";
+                #endif
+                if(matchNum > MaxDisplayNum)
+                {
+                    matchNum = MaxDisplayNum;
+                }
+                for(int i =0;i<matchNum;i++)
+                {
+                    #ifdef CMDA_DEBUG_STD_COUT
+                    std::cout << "计数器@usr_en i = " << i << std::endl;
+                    std::cout << "usr_en已显示文件个数：" << showedfilenum << std::endl;
+                    #endif
+
+                    if(showedfilenum >= matchNum)
+                    {
+                        break;
+                    }
+                    SheetsBuf buf;
+                    std::cout << "@[" << result.pathfile[i] << "] \n";
+                    showContent(result.pathfile[i],&buf);
+
+                    Colorize c(buf.line,buf.cnt);
+                    c.setDefaultColor();
+                    c.colorizeMsg();
+
+                    if(buf.cnt == 0 || !buf.line)
+                    {
+                        //此文件空白，处理下一个匹配文件
+                        showedfilenum++;
+                        continue;
+                    }
+                    for(int k = 0;k< buf.cnt;k++)
+                    {
+                        std::cout << buf.line[k];
+                    }
+                    showedfilenum++;
+                }
+                free(usr_zh);
             }
             else
             {}
         }
 
     }
-/*
-#ifdef CMDA_DEBUG_STD_COUT
-    {string *test = new string[16];
+
+    /* 测试
+    string *test = new string[16];
     test[0] = "# 测试";
     test[1] = "apt-get";
     test[2] = "# 测试-2";
@@ -259,8 +643,9 @@ int main(int argc, char **argv)
     cout << test[12];
     cout << test[13];
     cout << test[14];
-    cout << test[15];}
-#endif*/
+    cout << test[15];
+    delete [] test;
+    */
 
     return 0;
 }

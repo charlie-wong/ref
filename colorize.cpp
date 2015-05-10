@@ -81,17 +81,6 @@ Colorize::Colorize(std::string *message, int cnt)
 }
 Colorize::~Colorize(void)
 {
-    switch(msgCnt)
-    {
-        case 0:
-        case 1:
-            delete msg;
-            break;
-        case 2:
-        default:
-            delete [] msg;
-    };
-
     switch(indexcnt)
     {
         case 0:
@@ -119,7 +108,7 @@ bool Colorize::setDefaultColor(void)
     index[0].setCnt(1);
     index[1].setCnt(6);
 
-    index[0].append(ATD);
+    index[0].append(ATD);//默认显示
     index[1].append(FRed);//红色
     index[1].append(FGreen);//绿色
     index[1].append(FBrown);//棕色
@@ -139,7 +128,7 @@ void Colorize::colorizeTipsAndCmd(const colorAttribute &tips, const colorAttribu
 {
     if(!msg || msgCnt <= 0)
     {
-        std::cout << "待处理消息为空\n";
+        std::cout << " 空白文件\n";
         return;
     }
     if(!tips.v || tips.cnt <= 0 || !cmd.v || cmd.cnt <= 0)
