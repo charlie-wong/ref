@@ -5,10 +5,10 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     colorize.cpp \
-    init.cpp
+    sheets.cpp
 
 HEADERS += \
     colorize.h \
-    init.h \
-    debug.h
+    debug.h \
+    sheets.h
 

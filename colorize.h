@@ -10,23 +10,40 @@ enum displayColor
     FBlack=30, FRed=31, FGreen=32, FBrown=33, FBlue=34, FMagenta=35, FCyan=36, FWhite=37,
     BBlack=40, BRed=41, BGreen=42, BBrown=43, BBlue=44, BMagenta=45, BCyan=46, BWhite=47
 };
+class colorAttribute
+{
+public:
+    colorAttribute(void);
+    ~colorAttribute(void);
+
+    colorAttribute& append(int i);
+    void setCnt(int count);
+    int *v;
+    int cnt;//int值总个数
+    int xcnt;//待填充索引
+};
 
 class Colorize
 {
 public:
-    Colorize(std::string *message, int cnt, displayColor *uScheme=NULL, int uCnt=0);
+    Colorize(std::string *message, int cnt);
     ~Colorize(void);
 
-    void colorizeMsg(int begtip=0, int endtip=0, int begcmd=1, int endcmd=6);
+    bool setDefaultColor(void);
 
+    void colorizeMsg(void);
     void delAllColor(void);
-    bool colored;//彩色标志
 private:
+    /* index[0] Tips
+     * index[1] Cmd
+     */
+    colorAttribute *index;
+    int  indexcnt;
+
     std::string *msg;
     int msgCnt;
 
-    displayColor *colorizeScheme;
-    int colorCnt;
+    void colorizeTipsAndCmd(const colorAttribute &tips, const colorAttribute &cmd);
 };
 
 #endif
