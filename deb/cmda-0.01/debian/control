@@ -1,0 +1,15 @@
+Source: cmda
+Maintainer: Charlie Wong Super <1213charlie@163.com>
+Section: utils
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9)
+Homepage: https://github.com/charlie-wong/cmda
+
+Package: cmda
+Architecture: all
+Depends:${misc:Depends}, ${shlibs:Depends}
+Description: Linux command-line quick assistant
+ * Get the commom used command examples
+ * Show the examples with color
+ * User can make their own command 'database', which is the sheets file

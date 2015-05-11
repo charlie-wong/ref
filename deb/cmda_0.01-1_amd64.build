@@ -1,0 +1,75 @@
+ dpkg-buildpackage -rfakeroot -D -us -uc
+dpkg-buildpackage: warning: using a gain-root-command while being root
+dpkg-buildpackage: source package cmda
+dpkg-buildpackage: source version 0.01-1
+dpkg-buildpackage: source distribution unstable
+dpkg-buildpackage: source changed by Charlie Wong Super <1213charlie@163.com>
+ dpkg-source --before-build cmda-0.01
+dpkg-buildpackage: host architecture amd64
+ fakeroot debian/rules clean
+dh clean
+   dh_testdir
+   dh_auto_clean
+make[1]: Entering directory `/home/charlie/project/cmda/deb/cmda-0.01'
+rm -f *.o cmda
+make[1]: Leaving directory `/home/charlie/project/cmda/deb/cmda-0.01'
+   dh_clean
+ dpkg-source -b cmda-0.01
+dpkg-source: info: using source format `3.0 (quilt)'
+dpkg-source: info: building cmda using existing ./cmda_0.01.orig.tar.gz
+dpkg-source: info: building cmda in cmda_0.01-1.debian.tar.gz
+dpkg-source: info: building cmda in cmda_0.01-1.dsc
+ debian/rules build
+dh build
+   dh_testdir
+   dh_auto_configure
+   dh_auto_build
+make[1]: Entering directory `/home/charlie/project/cmda/deb/cmda-0.01'
+g++ -c -m64 -pipe -O2 -std=c++0x -Wall -W -fPIE -o "main.o" "main.cpp"
+g++ -c -m64 -pipe -O2 -std=c++0x -Wall -W -fPIE -o "colorize.o" "colorize.cpp"
+g++ -c -m64 -pipe -O2 -std=c++0x -Wall -W -fPIE -o "sheets.o" "sheets.cpp"
+sheets.cpp: In function ‘char* getCurrentUserName()’:
+sheets.cpp:36:37: warning: ignoring return value of ‘char* fgets(char*, int, FILE*)’, declared with attribute warn_unused_result [-Wunused-result]
+     fgets(buffer,50*sizeof(char),fp);
+                                     ^
+g++ -m64 -Wl,-O1 -o cmda main.o colorize.o sheets.o
+make[1]: Leaving directory `/home/charlie/project/cmda/deb/cmda-0.01'
+   dh_auto_test
+ fakeroot debian/rules binary
+dh binary
+   dh_testroot
+   dh_prep
+   dh_auto_install
+make[1]: Entering directory `/home/charlie/project/cmda/deb/cmda-0.01'
+g++ -m64 -Wl,-O1 -o cmda main.o colorize.o sheets.o
+sudo install -d /opt/cmda/bin /opt/cmda/sheets/en /opt/cmda/sheets/zh
+sudo install cmda /opt/cmda/bin
+sudo ln -s /opt/cmda/bin/cmda /usr/local/bin/cmda
+sudo install -t /opt/cmda/sheets/en ./sheets/en/*
+sudo install -t /opt/cmda/sheets/zh ./sheets/zh/*
+Install Done.
+make[1]: Leaving directory `/home/charlie/project/cmda/deb/cmda-0.01'
+   dh_installdocs
+   dh_installchangelogs
+   dh_perl
+   dh_link
+   dh_compress
+   dh_fixperms
+   dh_installdeb
+   dh_gencontrol
+dpkg-gencontrol: warning: Depends field of package cmda: unknown substitution variable ${shlibs:Depends}
+   dh_md5sums
+   dh_builddeb
+dpkg-deb: building package `cmda' in `../cmda_0.01-1_all.deb'.
+ dpkg-genchanges  >../cmda_0.01-1_amd64.changes
+dpkg-genchanges: including full source code in upload
+ dpkg-source --after-build cmda-0.01
+dpkg-buildpackage: full upload (original source is included)
+Now running lintian...
+warning: the authors of lintian do not recommend running it with root privileges!
+E: cmda changes: bad-distribution-in-changes-file unstable
+W: cmda source: ancient-standards-version 3.9.2 (current is 3.9.5)
+W: cmda: new-package-should-close-itp-bug
+W: cmda: possible-unindented-list-in-extended-description
+W: cmda: empty-binary-package
+Finished running lintian.
