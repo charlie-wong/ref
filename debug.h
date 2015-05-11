@@ -12,7 +12,7 @@
 #define C_LANGUAGE_END
 #endif//__cplusplus
 
-const std::string CMDA_version = "cmda version 0.01 (Ubuntu14.04 g++4.8.2)\n";
+const std::string CMDA_version = "cmda version \e[32m0.01\e[0m (Ubuntu\e[32m14.04\e[0m g++\e[32m4.8.2\e[0m)\n";
 const std::string CMDA_sheets_path_sys_en = "/opt/cmda/sheets/en/";
 const std::string CMDA_sheets_path_sys_zh = "/opt/cmda/sheets/zh/";
 

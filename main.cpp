@@ -97,6 +97,8 @@ int main(int argc, char **argv)
             case 'V':
             {
                 std::cout << CMDA_version;
+                std::cout << "Home-page: \e[32mhttps://github.com/charlie-wong/cmda\e[0m\n";
+                std::cout << "Rport-bugs: \e[32m1213charlie@gmail.com\e[0m\n";
                 break;
             }
             case 'm':
