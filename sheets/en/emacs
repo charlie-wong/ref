@@ -1,5 +1,4 @@
 # Basic usage
-
   Indent              Select text then press TAB
   Cut                 CTRL-w
   Copy                ALT-w
@@ -16,7 +15,6 @@
   Font size smaller   CTRL-x CTRL--
 
 #  Buffers
-
   Split screen vertically                         CTRL-x 2
   Split screen vertically with 5 row height       CTRL-u 5 CTRL-x 2
   Split screen horizontally                       CTRL-x 3
@@ -29,7 +27,6 @@
   Run command in the scratch buffer               CTRL-x CTRL-e
 
 # Other stuff
-
   Open a shell         ALT-x eshell
   Goto a line number   ALT-x goto-line
   Word wrap            ALT-x toggle-word-wrap
@@ -40,21 +37,17 @@
   List packages        ALT-x package-list-packages
 
 #  Sudoing within eshell
-
   By default when using the sudo command within eshell you'll just
   get "permission denied" messages. To overcome that type:
 
     alias sudo '*sudo $*'
 
 # Line numbers
-
   To add line numbers and enable moving to a line with CTRL-l:
-
     (global-set-key "\C-l" 'goto-line)
     (add-hook 'find-file-hook (lambda () (linum-mode 1)))
 
 # Org-mode
-
   To begin org-mode                            ALT-x org-mode
   Table column separator                       Vertical/pipe character
   Reorganize table                             TAB
@@ -62,9 +55,7 @@
   Open/collapse section                        TAB
   Open/collapse All                            CTRL-TAB
   Export in other file formats (eg HTML,PDF)   CTRL-c CTRL-e
-
   To make org-mode automatically wrap lines:
-
     (add-hook 'org-mode-hook
               '(lambda ()
                  (visual-line-mode 1)))

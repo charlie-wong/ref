@@ -1,13 +1,9 @@
 # Create a key
-
- gpg --gen-key
-
+gpg --gen-key
 
 # Show keys
-
-  To list a summary of all keys
-
-    gpg --list-keys
+ To list a summary of all keys
+  gpg --list-keys
 
   To show your public key
 
