@@ -17,39 +17,27 @@
 #############################################################################
 
 ####### Compiler, tools and options
-CC            = gcc
 CXX           = g++
-DEFINES       = 
-CFLAGS        = -m64 -pipe -O2 -Wall -W -fPIE $(DEFINES)
-CXXFLAGS      = -m64 -pipe -O2 -std=c++0x -Wall -W -fPIE $(DEFINES)
-INCPATH       = 
+CFLAGS        = -m64 -pipe -O2 -Wall -W -fPIE
+CXXFLAGS      = -m64 -pipe -O2 -std=c++0x -Wall -W -fPIE
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1
-LIBS          = 
 
-INSTALLDEST   = /opt/cmda
-INSTALLBIN    = /opt/cmda/bin/
-INSTALLEXE    = cmda
-EXELINK       = /usr/local/bin/cmda
-CMDAUSRDATA   = ~/.cmda/
-SHEETSENDATA  = ./sheets/en/*
-SHEETSENDEST  = /opt/cmda/sheets/en/
-SHEETSZHDATA  = ./sheets/zh/*
-SHEETSZHDEST  = /opt/cmda/sheets/zh/
-CMDASRCFILE   = cmda.pro \
-		colorize.cpp \
-		debug.h \
-		main.cpp \
-		README.md \
-		sheets.cpp \
-		colorize.h \
-		LICENSE \
-		Makefile \
-		sheets.h \
-CMDASRC       = /opt/cmda/src/
+PREFIX_LINK   = /usr/local
+BIN_LINK_DIR  = $(PREFIX_LINK)/bin
 
-####### Output directory
-OBJECTS_DIR   = ./
+PROG_HOME     = /opt/cmda
+PROG_BIN_DIR  = $(PROG_HOME)/bin
+PROG_SHEET_EN = $(PROG_HOME)/sheets/en
+PROG_SHEET_ZH = $(PROG_HOME)/sheets/zh
+PROG_USR_DIR  = ~/.cmda
+
+TARGET_NAME   = cmda
+
+RM            = rm -f
+MKDIR         = mkdir -p
+LN            = ln -s
+INSTALL       = install
 
 ####### Files
 SOURCES       = ./main.cpp \
@@ -59,33 +47,36 @@ SOURCES       = ./main.cpp \
 OBJECTS       = main.o \
 		colorize.o \
 		sheets.o
-
-TARGET  = cmda
+#######
+.PHONY:all install uninstall reinstall clean
 
 ####### Building
-$(TARGET):  $(OBJECTS)  
-	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS)
+all:$(OBJECTS)  
+	$(LINK) $(LFLAGS) -o $(TARGET_NAME) $(OBJECTS)
 
-###### Install and Uninstall
-install:
-	./cmda
-	sudo cp $(SHEETSENDATA) $(SHEETSENDEST)
-	sudo cp $(SHEETSZHDATA) $(SHEETSZHDEST)
-	sudo mkdir -p $(INSTALLBIN)
-	sudo cp $(INSTALLEXE) $(INSTALLBIN)
-	sudo ln -s $(INSTALLBIN)$(INSTALLEXE) $(EXELINK)
+###### Install Uninstall Reinstall
+install:all
+	sudo $(INSTALL) -d $(PROG_BIN_DIR) $(PROG_SHEET_EN) $(PROG_SHEET_ZH)
+	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
+	sudo $(LN) $(PROG_BIN_DIR)/$(TARGET_NAME) $(BIN_LINK_DIR)/$(TARGET_NAME)
+	sudo $(INSTALL) -t $(PROG_SHEET_EN) ./sheets/en/*
+	sudo $(INSTALL) -t $(PROG_SHEET_ZH) ./sheets/zh/*
 	@echo "Install Done."
 
 uninstall:
-	sudo rm -fr $(INSTALLDEST)
-	sudo rm -fr $(EXELINK)
-	@echo "Do you want to delete all the data in $(CMDAUSRDATA) ?(y/n)"
-	@read choice; if [ "$$choice" = "y" ];then rm -fr $(CMDAUSRDATA);fi
+	sudo $(RM) -r $(PROG_HOME)
+	sudo $(RM) $(BIN_LINK_DIR)/cmda
+	@echo "Do you want to delete all the data in $(PROG_USR_DIR) ?(y/n)"
+	@read choice; if [ "$$choice" = "y" ];then $(RM) -r $(PROG_USR_DIR);fi
 	@echo "Uninstall Done."
 	
+reinstall:all
+	sudo $(RM) $(PROG_BIN_DIR)/cmda
+	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
+	@echo "Reinstall Done."
 ####### Implicit rules
 %.o:%.cpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
-
+	$(CXX) -c $(CXXFLAGS) -o "$@" "$<"
+######  Cleanup
 clean:
 	rm -f *.o cmda
