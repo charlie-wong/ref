@@ -28,12 +28,15 @@ LFLAGS        = -m64 -Wl,-O1
 LIBS          = 
 
 INSTALLDEST   = /opt/cmda
+INSTALLBIN    = /opt/cmda/bin/
+INSTALLEXE    = cmda
+EXELINK       = /usr/local/bin/cmda
 CMDAUSRDATA   = ~/.cmda/
 SHEETSENDATA  = ./sheets/en/*
 SHEETSENDEST  = /opt/cmda/sheets/en/
 SHEETSZHDATA  = ./sheets/zh/*
-SHEETSZHDEST  = /opt/cmda/sheets/zh
-SOURCEFILE    = cmda.pro \
+SHEETSZHDEST  = /opt/cmda/sheets/zh/
+CMDASRCFILE   = cmda.pro \
 		colorize.cpp \
 		debug.h \
 		main.cpp \
@@ -42,9 +45,8 @@ SOURCEFILE    = cmda.pro \
 		colorize.h \
 		LICENSE \
 		Makefile \
-		sheets \
-		sheets.h
-SOURCEFILEDEST= /opt/cmda/src/
+		sheets.h \
+CMDASRC       = /opt/cmda/src/
 
 ####### Output directory
 OBJECTS_DIR   = ./
@@ -69,14 +71,16 @@ install:
 	./cmda
 	sudo cp $(SHEETSENDATA) $(SHEETSENDEST)
 	sudo cp $(SHEETSZHDATA) $(SHEETSZHDEST)
-	sudo mkdir -p $(SOURCEFILEDEST)
-	sudo cp $(SOURCEFILE) $(SOURCEFILEDEST)
+	sudo mkdir -p $(INSTALLBIN)
+	sudo cp $(INSTALLEXE) $(INSTALLBIN)
+	sudo ln -s $(INSTALLBIN)$(INSTALLEXE) $(EXELINK)
 	@echo "Install Done."
+
 uninstall:
 	sudo rm -fr $(INSTALLDEST)
-	@echo "Do you want to delete all the data in $(CMDAUSRDATA) ?(y/n)"\
-	read choice\
-	if [ "$choice" = "y" ];then rm -fr $(CMDAUSRDATA);fi
+	sudo rm -fr $(EXELINK)
+	@echo "Do you want to delete all the data in $(CMDAUSRDATA) ?(y/n)"
+	@read choice; if [ "$$choice" = "y" ];then rm -fr $(CMDAUSRDATA);fi
 	@echo "Uninstall Done."
 	
 ####### Implicit rules
