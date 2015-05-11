@@ -73,10 +73,10 @@ install:
 	sudo cp $(SOURCEFILE) $(SOURCEFILEDEST)
 	@echo "Install Done."
 uninstall:
-	sudo rm -r $(INSTALLDEST)
+	sudo rm -fr $(INSTALLDEST)
 	@echo "Do you want to delete all the data in $(CMDAUSRDATA) ?(y/n)"\
 	read choice\
-	if [ "$x" = "y" ];then;rm -r $(CMDAUSRDATA);fi
+	if [ "$choice" = "y" ];then rm -fr $(CMDAUSRDATA);fi
 	@echo "Uninstall Done."
 	
 ####### Implicit rules
