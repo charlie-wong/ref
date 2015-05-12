@@ -38,6 +38,7 @@ RM            = rm -f
 MKDIR         = mkdir -p
 LN            = ln -s
 INSTALL       = install
+CP	      = cp
 
 ####### Files
 SOURCES       = ./main.cpp \
@@ -48,19 +49,26 @@ OBJECTS       = main.o \
 		colorize.o \
 		sheets.o
 #######
-.PHONY:all install uninstall reinstall clean
+.PHONY:all preinstall install uninstall reinstall updatesheets_zh updatesheets_en clean
 
 ####### Building
 all:$(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET_NAME) $(OBJECTS)
 
-###### Install Uninstall Reinstall
+###### Install family
+preinstall:
+	@echo "Install location will be at => ${PROG_BIN_DIR}"
+	@echo "The link will be at => ${BIN_LINK_DIR}"
+	@echo "Sheets for english at => $(PROG_SHEET_EN)"
+	@echo "Sheets for chinese at => $(PROG_SHEET_ZH)"
+	@echo "User's sheets will be at => $(PROG_USR_DIR)/sheets/"
+	
 install:all
 	sudo $(INSTALL) -d $(PROG_BIN_DIR) $(PROG_SHEET_EN) $(PROG_SHEET_ZH)
 	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
 	sudo $(LN) $(PROG_BIN_DIR)/$(TARGET_NAME) $(BIN_LINK_DIR)/$(TARGET_NAME)
-	sudo $(INSTALL) -t $(PROG_SHEET_EN) ./sheets/en/*
-	sudo $(INSTALL) -t $(PROG_SHEET_ZH) ./sheets/zh/*
+	sudo $(CP) -ri ./sheets/en/* $(PROG_SHEET_EN)
+	sudo $(CP) -ri ./sheets/zh/* $(PROG_SHEET_ZH)
 	@echo "Install Done."
 
 uninstall:
@@ -74,6 +82,14 @@ reinstall:all
 	sudo $(RM) $(PROG_BIN_DIR)/cmda
 	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
 	@echo "Reinstall Done."
+	
+updatesheets_zh:
+	sudo $(CP) -ri ./sheets/zh/* $(PROG_SHEET_ZH)
+	@echo "Update sheets/zh Done."
+	
+updatesheets_en:
+	sudo $(CP) -ri ./sheets/en/* $(PROG_SHEET_EN)
+	@echo "Update sheets/en Done."
 ####### Implicit rules
 %.o:%.cpp
 	$(CXX) -c $(CXXFLAGS) -o "$@" "$<"
