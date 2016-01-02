@@ -28,4 +28,5 @@
 *.app
 
 #qt personal config file
-ref.pro.user
+*.pro.user
+
