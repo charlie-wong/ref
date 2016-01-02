@@ -1,10 +1,2 @@
-# cmda
-Linux command personal assistent
-Display the command quik-use example colored
-
-# install
-make
-make install
-
-# uninstall
-make uninstall
+# ref
+Show example usage of a given command, for quick reference
