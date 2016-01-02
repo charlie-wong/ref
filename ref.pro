@@ -13,7 +13,8 @@ SOURCES += \
     lib/value.cpp \
     lib/version.cpp \
     src/setting.cpp \
-    src/help.cpp
+    src/help.cpp \
+    src/core.cpp
 
 HEADERS += \
     src/debug.h \
@@ -25,5 +26,6 @@ HEADERS += \
     lib/linuxutility.h \
     lib/value.h \
     lib/version.h \
-    src/help.h
+    src/help.h \
+    src/core.h
 

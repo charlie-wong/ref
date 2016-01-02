@@ -1,20 +1,21 @@
 #include <iostream>
-#include "setting.h"
-#ifdef DEBUG
- #include "debug.h"
-#endif
-libwlc::Version ref_version(0,0,1,"Diego");
-using namespace std;
+#include "help.h"
+int LanguagePriorityList[2] = {2, 1}; // 语言搜索优先级，可用配置文件覆盖默认设置
+                                      // 指定搜索语言时此优先级列表失效，仅对搜索全部语言有效
+                                      // 默认先中文，后英文，原因自行考虑...
+                                      // LanguagePriorityList[0] 优先
+                                      // LanguagePriorityList[1] 其次
+int SearchLanguage = 0;     // 搜索哪种语言：0 全部， 1 英语， 2 中文
+                            // 0 默认值，1 => -L en，2 => -L zh
+int SearchAreaNum  = 0;     // 搜索哪个区域：0 全部，1～9 对应 man 手册
+                            // 0 默认值， $ ref 2 find ...
+int SearchAreaMax  = 9;     // 总共 9 个区域，对应 man 手册
+bool MutilMatchShowFileList = true;    // 当有多个匹配文件时，默认匹配文件列表
 
 int main(int argc, char **argv)
 {
-#ifdef WRITE_VERSION_TO_FILE
-    ref_version.writeToFile("./","version");
-#endif
-    if(ref_version.readFromFile("./","version"))
-        cout << "read ok\n";
-
-    cout << ref_version.getVersionInfo(ref_version) << endl;
+    init();
+    argParse(argc, argv);
     return 0;
 }
 
