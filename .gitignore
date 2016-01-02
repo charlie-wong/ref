@@ -28,4 +28,4 @@
 *.app
 
 #qt personal config file
-cmda.pro.user
+ref.pro.user
