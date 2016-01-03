@@ -1,0 +1,3 @@
+# ssh远程登录
+ssh -l USERNAME IP或Hostname -p 22
+

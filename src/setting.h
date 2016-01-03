@@ -7,7 +7,7 @@ extern libwlc::Version ref_version;
 const std::string ref_language_dir_en = "en";
 const std::string ref_language_dir_zh = "zh";
 const std::string ref_install_location = "/opt/ref";
-const std::string ref_version_file_loc = "./";
+const std::string ref_version_file_loc = "/opt/ref/bin/";
 const std::string ref_version_file_name= "version";
 const std::string ref_sheets_root_path = "/opt/ref/sheets";
 const std::string user_name = libwlc::LinuxUtility::getCurrentUserName();

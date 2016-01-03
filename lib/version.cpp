@@ -767,6 +767,7 @@ std::string Version::getHostOSInfo(void)
         std::cerr << "libwlc.so/libwlc.a: Version: Can't get Processor Type\n";
         return "";
     }
+    memset(buffer,0,sizeof(buffer));
     fgets(buffer,sizeof(buffer),fp);
     pclose(fp);
     pb = buffer;
@@ -878,7 +879,7 @@ unsigned char Version::map_HostOSBits_to_id(const std::string &osb)
         x_64 = false;
     }*/
     /////////////////////////////////////////
-    if(osb=="x86" || osb=="X86")
+    if(osb=="x86" || osb=="X86" || osb=="i686")
         return (unsigned char)0x00;
     else if(osb=="x86_64" || osb=="X86_64" || osb=="ADM64" ||
             osb=="x64" || osb=="X64" || osb=="adm64")

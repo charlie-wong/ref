@@ -10,7 +10,7 @@ namespace libwlc
 #define C_LANGUAGE_END
 #endif//__cplusplus
 /////////////////////////////////////////////////
-#define LIB_WLC_DEBUG				/* 库 libwlc 调试总开关 */
+//#define LIB_WLC_DEBUG				/* 库 libwlc 调试总开关 */
 /////////////////////////////////////////////////
 #ifdef LIB_WLC_DEBUG
 #define LIB_WLC_DEBUG_VALUE			/* 类 Value 调试总开关  */

@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 TARGET = ref
-DEFINES += DEBUG
+#DEFINES += DEBUG
 
 SOURCES += \
     src/main.cpp \
