@@ -503,6 +503,30 @@ bool Version::readFromFile(const std::string path, const std::string file)
     std::string pn = path + file;
 
     FILE *fp = fopen(pn.c_str(),"rb");
+    if(fp == NULL)
+    {
+        std::cerr << "can't open file: " << pn << std::endl;
+        return false;
+    }
+
+    int opcode = fseek(fp, 0, SEEK_END);
+    long file_len;
+    if(opcode == 0)
+    {
+        file_len = ftell(fp);
+        if(file_len != sizeof(libwlc::VersionBits))
+        {
+            std::cerr << "modified accidently: " << pn << std::endl;
+            return false;
+        }
+        fseek(fp, 0, SEEK_SET);
+    }
+    else
+    {
+        std::cerr << "can't get file size: " << pn << std::endl;
+        return false;
+    }
+
     size_t rcnt = fread(&m_ver,1,sizeof(m_ver),fp);
     fclose(fp);
 

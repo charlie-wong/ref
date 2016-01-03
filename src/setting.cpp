@@ -1,6 +1,6 @@
 #include <iostream>
 #include "setting.h"
-libwlc::Version ref_version(0,0,1,"Diego");
+libwlc::Version ref_version(0,1,0,"Diego");
 
 bool writeVersionInfoToFile(void)
 {

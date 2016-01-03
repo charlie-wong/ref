@@ -12,6 +12,7 @@ extern int optopt;    //对不在optstring中的选项字符, 将其放在此变
 extern int LanguagePriorityList[2];
 extern int SearchLanguage;
 extern int SearchAreaNum;
+extern int SearchAreaList[10];
 extern bool MutilMatchShowFileList;
 
 bool version_file_exist_flag = true;
@@ -47,7 +48,7 @@ void showUsage(void)
     << "\t                   " << ref_sheets_user_path << "\n"
     << "Tips: You config file locate at: \n"
     << "\t                   " << ref_user_config_file_path +"/"+ ref_user_config_file_name << "\n"
-    << "Home-page: https://github.com/charlie-wong/ref\n";
+    << "HomePage: https://github.com/charlie-wong/ref\n";
     return;
 }
 int inKeyWordsList(const std::string keyWords)
@@ -237,6 +238,59 @@ void parseKeyWordsValue_3(const std::string valueList)
         }
     }
 }
+void parseKeyWordsValue_4(const std::string valueList)
+{
+    if(valueList.empty()) return;
+
+    size_t len = valueList.length();
+    size_t cnt = 0;
+
+    int index = 1;
+    while(cnt < len)
+    {
+        char cc = valueList[cnt];
+        if(cc==' ' || cc==',' || cc=='\t' ||
+           cc==':' || cc==';')
+        {
+            cnt++;
+        }
+        else
+        {
+            size_t fcnt = cnt;
+            size_t lcnt = cnt;
+            while(lcnt < len)
+            {
+                cc = valueList[lcnt];
+                if(cc==' ' || cc==',' || cc=='\t' ||
+                   cc==':' || cc==';')
+                    break;
+                else
+                    lcnt++;
+            }
+            std::string tmpv = valueList.substr(fcnt,lcnt-fcnt);
+            if(tmpv.length() == 1)
+            {
+                char ch[2] = { tmpv[0], 0,};
+                SearchAreaList[0] = 1;
+                int k = atoi(ch);
+
+                bool flag = true;
+                for(int i=1; i< 10; i++)
+                {
+                    if(SearchAreaList[i] == k)
+                        flag = false;
+                }
+
+                if(flag)
+                {
+                    SearchAreaList[index] = k;
+                    index++;
+                }
+            }
+            cnt = lcnt;
+        }
+    }
+}
 void loadConfigFile(void)
 {
     std::string pn = ref_user_config_file_path + "/" + ref_user_config_file_name;
@@ -312,6 +366,11 @@ void loadConfigFile(void)
             parseKeyWordsValue_3(valueList);
             break;
         }
+        case 4:
+        {
+            parseKeyWordsValue_4(valueList);
+            break;
+        }
         default:
         {
             std::cout << "Invalid key words: '" << keyWords << "'\n";
@@ -323,8 +382,72 @@ void loadConfigFile(void)
     fclose(fp);
     return;
 }
+bool man9DirCheck(const std::string path, const std::string name, bool misCreatFlag=true)
+{
+    std::string tmp = path + "/" + name;
+    if(!libwlc::LinuxUtility::isDirectoryExist(tmp))
+    {
+        if(misCreatFlag)
+        {
+            std::cerr << "Try to creat dir: " << tmp;
+            if(!libwlc::LinuxUtility::creatDirtectory(path, name))
+            {
+                std::cerr << "\t Failed!\n";
+                return false;
+            }
+            else
+            {
+                std::cerr << "\t Succeed.\n";
+                libwlc::LinuxUtility::creatDirtectory(tmp, ref_language_dir_en);
+                libwlc::LinuxUtility::creatDirtectory(tmp, ref_language_dir_zh);
+            }
+        }
+        else
+        {
+            std::cerr << "Missing dir: " << tmp << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+bool man9Check(const std::string path, bool misCreatFlag=true)
+{
+    bool flag = true;
+    std::string man9dir[] = {"0","1","2","3","4","5","6","7","8","9"};
+    int cnt = 1;
+    while(cnt < 10)
+    {
+        flag = man9DirCheck(path, man9dir[cnt], misCreatFlag);
+        cnt++;
+    }
+    return flag;
+}
+bool resourceCheck(void)
+{
+    bool flag = true;
+    flag = man9Check(ref_sheets_root_path, false);// 默认数据文件目录检查
+
+    // 用户配置及数据目录检查
+    if(!libwlc::LinuxUtility::isDirectoryExist(ref_user_config_file_path))
+    {
+        std::cerr << "Try to creat dir: " << ref_user_config_file_path;
+        if(!libwlc::LinuxUtility::creatDirtectory(ref_user_home_dir_path, ref_user_home_dir_name))
+        {
+            std::cerr << "\t\t Failed!\n";
+            flag = false;
+        }
+        else
+        {
+            std::cerr << "\t\t Succeed.\n";
+        }
+    }
+    flag = man9Check(ref_sheets_user_path); // 用户数据文件目录检查
+
+    return flag;
+}
 void init(void)
 {
+    resourceCheck();
     if(!libwlc::LinuxUtility::isFileExist(ref_version_file_loc, ref_version_file_name))
     {
         std::cerr << "missing file: '"
@@ -341,7 +464,6 @@ void init(void)
         loadConfigFile();
     }
 }
-
 void argParse(int argc, char **argv)
 {
     /* 字符后跟一个冒号,表示该选项必须提供一个参数
