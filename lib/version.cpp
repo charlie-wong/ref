@@ -716,6 +716,7 @@ std::string Version::getGCCInfo(void)
     {
         std::string wlc = "";
         std::string tmp(buffer);
+
         size_t ubi = tmp.find("Ubuntu");
         if(ubi == std::string::npos)
             ubi = tmp.find("ubuntu");
@@ -723,6 +724,15 @@ std::string Version::getGCCInfo(void)
         {
             hosid_flag = true;
             wlc = tmp.substr(ubi,6);
+        }
+
+        size_t dei = tmp.find("Debian");
+        if(dei == std::string::npos)
+            dei = tmp.find("debian");
+        if(dei != std::string::npos)
+        {
+            hosid_flag = true;
+            wlc = tmp.substr(dei,6);
         }
 
         size_t len = tmp.length();
