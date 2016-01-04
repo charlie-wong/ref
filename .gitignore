@@ -29,4 +29,7 @@
 
 #qt personal config file
 *.pro.user
+build/ref
+build/upvf
+build/version
 
