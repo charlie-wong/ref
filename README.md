@@ -11,6 +11,6 @@ Makefiles is under `build` directory.<br>
 
 # PrintScreen
 Example: `$ ref ls`<br>
-![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-ls.png "Example: $ ref ls")
+![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-ls.png "Example: $ ref ls")<br>
 Example: `$ ref scp ls`<br>
-![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-scp-ls.png "Example: $ ref scp ls")
+![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-scp-ls.png "Example: $ ref scp ls")<br>
