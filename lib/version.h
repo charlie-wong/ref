@@ -12,11 +12,16 @@ typedef struct __VersionBits__
         char vname[256];//版本昵称
 
     unsigned char hosid;//构建主机操作系统ID
-    // 0        -> 未知
-    //32位系统可用 ID 范围 [  1,127]
-    //        1 -> Ubuntu(X86)
+    //32位系统可用 ID 范围 [  0,127]
+    //        0 -> 未知
+    //        1 -> Ubuntu(x86)
+    //        2 -> GNU/Linux(x86)
+    //        3 -> Debian(x86)
     //64位系统可用 ID 范围 [128,255]
-    //      128 -> Ubuntu(ADM64)
+    //      128 -> 未知
+    //      129 -> Ubuntu(ADM64)
+    //      130 -> GNU/Linux(ADM64)
+    //      131 -> Debian(ADM64)
     unsigned char  ccid;//构建编译器ID
     //      0   -> 未知
     //      1   -> GCC

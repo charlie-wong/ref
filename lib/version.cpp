@@ -794,10 +794,12 @@ std::string   Version::map_id_to_HostOSName(const unsigned char hid)
     case 0:   return "Unknown-Host-OS";//32位
     case 1:   return "Ubuntu";
     case 2:   return "GNU/Linux";
+    case 3:   return "Debian";
     //////////////////////////////////////////////////
     case 128: return "Unknown-Host-OS";//64位
     case 129: return "Ubuntu";
     case 130: return "GNU/Linux";
+    case 131: return "Debian";
     ///////////////////////////////////////////////////
     default:  return "Unknown-Host-OS";
     }
@@ -824,6 +826,8 @@ unsigned char Version::map_HostOSName_to_id(const std::string &osn)
         return 0x01;
     else if(osn == "GNU/Linux")
         return 0x02;
+    else if(osn == "Debian")
+        return 0x03;
     else
         return 0x00;
 
