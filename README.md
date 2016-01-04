@@ -29,7 +29,8 @@ Makefiles is under `build` directory.<br>
        `$ cat ~/.config/ref/sheets/1/en/test`<br>
        `$ ref test`<br>
        ![Missing Picture](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-user.png "Customize Personal Sheets")<br>
-  3. If you have any questions, you can contact with me by email, all welcome!<br>
+  4. The `sheets` always nees help, if you can, help it. If you find any questions of it, feel free to let me know.:smile::smirk:
+  4. If you have any questions, you can contact with me by email, all welcome!<br>
 
 
 # PrintScreen
