@@ -10,7 +10,13 @@ The program's action is affected by the config file under `~/.config/ref/config`
 Makefiles is under `build` directory.<br>
 
 # PrintScreen
+## ubuntu
 Example: `$ ref ls`<br>
 ![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-ls.png "Example: $ ref ls")<br>
 Example: `$ ref scp ls`<br>
 ![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-scp-ls.png "Example: $ ref scp ls")<br>
+
+## debian
+Example: `$ ref -v ls`<br>
+![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-debian.png "Example: $ ref -v ls")<br>
+
