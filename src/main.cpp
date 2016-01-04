@@ -19,7 +19,6 @@ int main(int argc, char **argv)
 {
     init();
     argParse(argc, argv);
-
     return 0;
 }
 

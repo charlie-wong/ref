@@ -18,10 +18,10 @@
 
 ####### Compiler, tools and options
 CXX           = g++
-CFLAGS        = -m64 -pipe -O2 -Wall -W -fPIE 
-CXXFLAGS      = -m64 -pipe -O2 -std=c++0x -Wall -W -fPIE 
+CFLAGS        = -m64 -pipe -O2 -Wall -W -fPIE
+CXXFLAGS      = -m64 -pipe -O2 -std=c++0x -Wall -W -fPIE
 LINK          = g++
-LFLAGS        = -m64 -Wl,-O1 
+LFLAGS        = -m64 -Wl,-O1
 
 PROG_DATA     = ../data
 PROG_VERSION  = ${PROG_DATA}/version
@@ -33,7 +33,7 @@ PROG_SHEETS    = $(PROG_HOME)/sheets
 PROG_BIN_DIR  = $(PROG_HOME)/bin
 PROG_USR_DIR  = ~/.config/ref
 
-TARGET_NAME   = ref
+TARGET_NAME   = upvf
 
 RM            = rm -f
 MKDIR         = mkdir -p
@@ -43,7 +43,7 @@ CP	      = cp
 
 OBJECTS_DIR   = ./
 ####### Files
-SOURCES       = ../src/main.cpp \
+SOURCES       = ../src/upvf.cpp \
 		../lib/colorize.cpp \
 		../lib/linuxutility.cpp \
 		../lib/value.cpp \
@@ -51,7 +51,7 @@ SOURCES       = ../src/main.cpp \
 		../src/setting.cpp \
 		../src/help.cpp \
 		../src/core.cpp 
-OBJECTS       = main.o \
+OBJECTS       = upvf.o \
 		colorize.o \
 		linuxutility.o \
 		value.o \
@@ -59,49 +59,12 @@ OBJECTS       = main.o \
 		setting.o \
 		help.o \
 		core.o
-#######
-.PHONY:all preinstall install uninstall reinstall updatesheets clean
+
 
 ####### Building
 all:$(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET_NAME) $(OBJECTS)
 
-###### Install family
-help:
-	@echo "Install location will be at => ${PROG_BIN_DIR}"
-	@echo "The link will be at         => ${BIN_LINK_DIR}"
-	@echo "User's config home          => $(PROG_USR_DIR)"
-	
-install:all
-	sudo $(INSTALL) -d $(PROG_BIN_DIR) ${PROG_SHEETS}
-	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
-	sudo $(LN) $(PROG_BIN_DIR)/$(TARGET_NAME) $(BIN_LINK_DIR)/$(TARGET_NAME)
-	sudo $(CP) -ri ${PROG_DATA}/sheets/* $(PROG_SHEETS)/
-	@if [ -f ./version ]; then PROG_VERSION=./version ;fi
-	sudo $(CP) -ri ${PROG_VERSION} $(PROG_BIN_DIR)/
-	sudo $(CP) -ri ${PROG_DATA}/config $(PROG_HOME)/config.template
-	
-	${MKDIR} $(PROG_USR_DIR)
-	$(CP) -ri ${PROG_DATA}/config $(PROG_USR_DIR)/
-	@echo "Install Done."
-
-uninstall:
-	sudo $(RM) -r $(PROG_HOME)
-	sudo $(RM) $(BIN_LINK_DIR)/$(TARGET_NAME)
-	@echo "Do you want to delete all the data in $(PROG_USR_DIR) ?(y/n)"
-	@read choice; if [ "$$choice" = "y" ];then $(RM) -r $(PROG_USR_DIR);fi
-	@echo "Uninstall Done."
-	
-reinstall:all
-	sudo $(RM) $(PROG_BIN_DIR)/$(TARGET_NAME)
-	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
-	@if [ -f ./version ]; then PROG_VERSION=./version ;fi
-	sudo $(CP) -ri ${PROG_VERSION} $(PROG_BIN_DIR)/
-	@echo "Reinstall Done."
-	
-updatesheets:
-	sudo $(CP) -ri ${PROG_DATA}/sheets/* $(PROG_SHEETS)/
-	@echo "Update sheets Done."
 ####### Implicit rules
 .SUFFIXES: .o .c .cpp .cc .cxx .C
 
@@ -119,8 +82,8 @@ updatesheets:
 
 ####### Compile
 
-main.o: ../src/main.cpp ../src/help.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../src/main.cpp
+upvf.o: ../src/upvf.cpp ../src/help.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o upvf.o ../src/upvf.cpp
 
 colorize.o: ../lib/colorize.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o colorize.o ../lib/colorize.cpp

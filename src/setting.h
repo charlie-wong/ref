@@ -32,6 +32,7 @@ const std::string ref_support_language_name[] =
     "en",
     "zh",
 };
+bool writeVersionInfoToFile(std::string loc, std::string name);
 bool writeVersionInfoToFile(void);
 bool readVersionInfoFromFile(void);
 #endif // SETTING_H

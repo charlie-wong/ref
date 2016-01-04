@@ -1,6 +1,14 @@
 #include <iostream>
 #include "setting.h"
-libwlc::Version ref_version(0,1,0,"Diego");
+libwlc::Version ref_version(0,0,3,"Diego");
+
+bool writeVersionInfoToFile(std::string loc, std::string name)
+{
+    if(ref_version.writeToFile(loc.c_str(),name.c_str()))
+        return true;
+    else
+        return false;
+}
 
 bool writeVersionInfoToFile(void)
 {
