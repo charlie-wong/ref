@@ -879,8 +879,12 @@ unsigned char Version::map_HostOSBits_to_id(const std::string &osb)
         x_64 = false;
     }*/
     /////////////////////////////////////////
-    if(osb=="x86" || osb=="X86" || osb=="i686")
+    if(osb=="x86" || osb=="X86" || osb=="i686" || osb=="unknown")
+    {
+        // uname -p 可能返回 unknown， 此时假设处理器是 32 位
+        // 此假设是为了减少错误警告信息，以免打扰用户，降低用于体验
         return (unsigned char)0x00;
+    }
     else if(osb=="x86_64" || osb=="X86_64" || osb=="ADM64" ||
             osb=="x64" || osb=="X64" || osb=="adm64")
         return (unsigned char)0x80;
