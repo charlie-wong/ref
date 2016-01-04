@@ -5,11 +5,11 @@ The program's action is affected by the config file under `~/.config/ref/config`
 # HOWTOS
 Makefiles is under `build` directory.<br>
 1. change to `build` directory, and then use `make`, choose a target, for example, `arch64r`<br>
-![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-make.png "Choose a target to build")
+![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-make.png "Choose a target to build")<br>
 2. `$ make arch64r` to make, and will show a prompt to ask do you want to install?<br>
-![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-build-install.png "Build & Install")
+![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-build-install.png "Build & Install")<br>
 3. `$ make uninstall` to completely remove it!<br>
-![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-uninstall.png "Uninstall")
+![](https://raw.githubusercontent.com/charlie-wong/ref/master/prtsc/ref-uninstall.png "Uninstall")<br>
 ###### tips:
   1. For ubuntu, make sure you know the root passwd, because i install it at `/opt/ref`, which a root passwd required. 
      If you want, you can change the Makefiles in `build` to install at another location.<br>
