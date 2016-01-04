@@ -24,7 +24,13 @@ LINK          = g++
 LFLAGS        = -m64 -Wl,-O1 -g
 
 PROG_DATA     = ../data
+PROG_VERSION_FILE_NAME = version
+
 PROG_VERSION  = ${PROG_DATA}/version
+ifeq (${PROG_VERSION_FILE_NAME}, ${wildcard ${PROG_VERSION_FILE_NAME}})
+PROG_VERSION  = ./version
+endif
+
 PREFIX_LINK   = /usr/local
 BIN_LINK_DIR  = $(PREFIX_LINK)/bin
 
@@ -77,7 +83,6 @@ install:all
 	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
 	sudo $(LN) $(PROG_BIN_DIR)/$(TARGET_NAME) $(BIN_LINK_DIR)/$(TARGET_NAME)
 	sudo $(CP) -ri ${PROG_DATA}/sheets/* $(PROG_SHEETS)/
-	@if [ -f ./version ]; then PROG_VERSION=./version ;fi
 	sudo $(CP) -ri ${PROG_VERSION} $(PROG_BIN_DIR)/
 	sudo $(CP) -ri ${PROG_DATA}/config $(PROG_HOME)/config.template
 	
@@ -95,7 +100,6 @@ uninstall:
 reinstall:all
 	sudo $(RM) $(PROG_BIN_DIR)/$(TARGET_NAME)
 	sudo $(INSTALL) $(TARGET_NAME) $(PROG_BIN_DIR)
-	@if [ -f ./version ]; then PROG_VERSION=./version ;fi
 	sudo $(CP) -ri ${PROG_VERSION} $(PROG_BIN_DIR)/
 	@echo "Reinstall Done."
 	
