@@ -14,6 +14,7 @@ const std::string user_name = libwlc::LinuxUtility::getCurrentUserName();
 const std::string ref_sheets_user_path = "/home/" + user_name + "/.config/ref/sheets";
 const std::string ref_user_home_dir_path    = "/home/" + user_name + "/.config";
 const std::string ref_user_home_dir_name    = "ref";
+const std::string ref_template_config_file  = "/opt/ref/config.template";
 const std::string ref_user_config_file_path = "/home/" + user_name + "/.config/ref";
 const std::string ref_user_config_file_name = "config";
 const int         ref_config_key_works_cnt = 5;

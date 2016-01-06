@@ -422,6 +422,13 @@ bool man9Check(const std::string path, bool misCreatFlag=true)
     }
     return flag;
 }
+void copyConfigTemplateFile(void)
+{
+        //std::cout << "copy config template\n";
+        std::string cp_config_template = "cp " + ref_template_config_file + " " +
+                                         ref_user_config_file_path + "/" + ref_user_config_file_name;
+        system(cp_config_template.c_str());
+}
 bool resourceCheck(void)
 {
     bool flag = true;
@@ -439,6 +446,7 @@ bool resourceCheck(void)
         else
         {
             std::cerr << "\t\t Succeed.\n";
+            copyConfigTemplateFile();
         }
     }
     flag = man9Check(ref_sheets_user_path); // 用户数据文件目录检查
@@ -462,6 +470,10 @@ void init(void)
     if(libwlc::LinuxUtility::isFileExist(ref_user_config_file_path, ref_user_config_file_name))
     {
         loadConfigFile();
+    }
+    else
+    {
+        copyConfigTemplateFile();
     }
 }
 void argParse(int argc, char **argv)
