@@ -35,6 +35,11 @@ BUILD_DIR     = ./objs
 STATIC_DATA_DIR = ./data
 PROG_VERSION_FILE = ${STATIC_DATA_DIR}/version
 
+PROG_VERSION_FLAG = $(shell if [ -f ${BUILD_DIR}/version ]; then echo "exist"; else echo "notexist"; fi;)
+ifeq ("${PROG_VERSION_FLAG}", "exist")
+PROG_VERSION_FILE = ${BUILD_DIR}/version
+endif
+
 RM            = rm -f
 MKDIR         = mkdir -p
 LN            = ln -s
