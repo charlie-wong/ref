@@ -21,6 +21,7 @@ CFLAGS        = -m32 -pipe -O2 -Wall -W -fPIE
 CXXFLAGS      = -m32 -pipe -O2 -std=c++0x -Wall -W -fPIE
 LINK          = g++
 LFLAGS        = -m32 -Wl,-O1
+LDFLAGS:=$(shell dpkg-buildflags --get LDFLAGS)
 
 PREFIX          = /opt
 PREFIX_LINK     = /usr/bin
@@ -63,7 +64,7 @@ OBJECTS       = ${BUILD_DIR}/colorize.o \
 .PHONY:all install uninstall clean
 ####### Building
 all:$(OBJECTS) ${BUILD_DIR}/main.o ${BUILD_DIR}/upvf.o first
-	$(LINK) $(LFLAGS) -o ${BUILD_DIR}/$(PROG_NAME) $(OBJECTS) ${BUILD_DIR}/main.o
+	$(LINK) $(LFLAGS) ${LDFLAGS} -o ${BUILD_DIR}/$(PROG_NAME) $(OBJECTS) ${BUILD_DIR}/main.o
 
 first:
 	$(LINK) $(LFLAGS) -o ${BUILD_DIR}/upvf $(OBJECTS) ${BUILD_DIR}/upvf.o
