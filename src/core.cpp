@@ -21,6 +21,8 @@ extern int SearchAreaList[10];
 extern int SearchLanguage;
 extern int LanguagePriorityList[2];
 extern bool MutilMatchShowFileList;
+extern int  selected_file_num;
+
 SearchBasePath searchArea;
 
 #ifdef DEBUG_REF
@@ -389,16 +391,48 @@ void searchEngine(const std::string &what)
 
     if(result.curCnt > 1 && MutilMatchShowFileList)
     {
-        std::cout << "search for: [" << what << "]\n";
-        result.showMatchFiles();
+        if( selected_file_num <= 0)
+        {
+            std::cout << "search for: [" << what << "]\n";
+
+            result.showMatchFiles();
+            std::cout << "\nTips: use '-L/-f' to select one file, see -h for detail\n";
+        }
+        else
+        {
+            goto tag_show_selected_file;
+        }
     }
     else
     {
+tag_show_selected_file:
         std::string tmp;
-        while(!(tmp=result.getMatchFile()).empty())
+
+        int cnt = 1;
+        if(selected_file_num > 0)
         {
-            Content ts(tmp);
-            ts.show();
+            while(!(tmp=result.getMatchFile()).empty())
+            {
+                if(selected_file_num == cnt)
+                {
+                    Content ts(tmp);
+                    ts.show();
+                    break;
+                }
+                cnt++;
+            }
+            if(cnt < selected_file_num)
+            {
+                std::cerr << "Tips: select one of [1," << cnt-1 << "]\n";
+            }
+        }
+        else
+        {
+            while(!(tmp=result.getMatchFile()).empty())
+            {
+                Content ts(tmp);
+                ts.show();
+            }
         }
     }
 }
@@ -453,7 +487,7 @@ void Search::showMatchFiles(void)
 {
     for(int i=0; i<curCnt; i++)
     {
-        std::cout << pathName[i] << std::endl;
+        std::cout << "[ " << i+1 << " ] => " << pathName[i] << std::endl;
     }
 }
 std::string Search::getMatchFile(void)
@@ -734,7 +768,7 @@ void Colorize::colorizeTipsAndCmd(const colorAttribute &tips, const colorAttribu
 {
     if(!msg || msgCnt <= 0)
     {
-        std::cout << " 空白文件\n";
+        std::cout << "匹配到空白文件\n";
         return;
     }
     if(!tips.v || tips.cnt <= 0 || !cmd.v || cmd.cnt <= 0)

@@ -17,6 +17,7 @@ extern bool MutilMatchShowFileList;
 
 bool version_file_exist_flag = true;
 bool config_file_exist_flag  = true;
+int  selected_file_num = 0;
 
 void showVersionInfo(void)
 {
@@ -36,18 +37,20 @@ void showUsage(void)
     std::cout
     << "Usage:\n"
     << "\t1. $ ref find      show example of find command.\n"
-    << "\t2. $ ref 2 find    show example of find command, search only in area 2.\n"
-    << "\t3. $ ref -L [en|zh|ez] find\n"
-    << "\t                   show example of find command, search only in given language.\n"
-    << "\t4. $ ref -v        show version.\n"
-    << "\t5. $ ref -h        show this help.\n"
+    << "\t2. $ ref 2 find    search only in area 2.\n"
+    << "\t3. $ ref -f 2 find show the number '2' file.\n"
+    << "                           when mutil file matched and will list the index number for each file.\n"
+    << "\t4. $ ref -L [en|zh|ez] find\n"
+    << "\t                   search only in given language.\n"
+    << "\t5. $ ref -v        show version.\n"
+    << "\t6. $ ref -h        show this help.\n"
     << "\n"
-    << "Tips: This program installed at: \n"
-    << "\t                   " << ref_install_location << "\n"
-    << "Tips: You can put youself file in subdirectories of: \n"
-    << "\t                   " << ref_sheets_user_path << "\n"
-    << "Tips: You config file locate at: \n"
-    << "\t                   " << ref_user_config_file_path +"/"+ ref_user_config_file_name << "\n"
+    << "Tips: program installed at: "
+    << ref_install_location << "\n"
+    << "Tips: put personal file in subdirectories of: "
+    << ref_sheets_user_path << "\n"
+    << "Tips: config file locate at: "
+    << ref_user_config_file_path +"/"+ ref_user_config_file_name << "\n"
     << "HomePage: https://github.com/charlie-wong/ref\n";
     return;
 }
@@ -484,7 +487,7 @@ void argParse(int argc, char **argv)
      *       则后面要求有选项参数的选项字符，当在argv中该选项字符没有参数,
      *       调用getopt函数族处理该选项参数时返回冒号,optopt存放的是该选项字符
      */
-    const char *optstring=":hHvVL:y::";
+    const char *optstring=":hHvVL:f:y::";
     const struct option longopts[]=
     {
         {"help",no_argument,0,'h'},
@@ -492,6 +495,7 @@ void argParse(int argc, char **argv)
         {"version",no_argument,0,'v'},
         {"version",no_argument,0,'V'},
         {"language",required_argument,0,'L'},
+        {"file",required_argument,0,'f'},
         {"yarg",optional_argument,0,'y'},
         {0,0,0,0},
     };
@@ -535,6 +539,11 @@ void argParse(int argc, char **argv)
                     std::cout << "Use default value\n";
                     std::cout << "'$ ref -h', for detail information.\n";
                 }
+                break;
+            }
+            case 'f':
+            {
+                selected_file_num = atoi(optarg);
                 break;
             }
             case 'y':

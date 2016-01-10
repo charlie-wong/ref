@@ -18,10 +18,10 @@
 
 ####### Compiler, tools and options
 CXX           = g++
-CFLAGS        = -m32 -pipe -O2 -Wall -W -fPIE -static
-CXXFLAGS      = -m32 -pipe -O2 -std=c++0x -Wall -W -fPIE -static
+CFLAGS        = -m32 -pipe -O2 -Wall -W -fPIE
+CXXFLAGS      = -m32 -pipe -O2 -std=c++0x -Wall -W -fPIE
 LINK          = g++
-LFLAGS        = -m32 -Wl,-O1 -static
+LFLAGS        = -m32 -Wl,-O1
 
 PROG_DATA     = ../data
 PROG_VERSION_FILE_NAME = version
