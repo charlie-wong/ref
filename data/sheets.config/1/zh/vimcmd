@@ -1,0 +1,177 @@
+# VIM 命令快速参考
+F11			全屏/还原(GUI)
+:DIstart		开始绘制，绘制过程中可使用左右上下/shift等控制
+:DIstop		停止绘制，详细绘制信息该插件目录doc说明文当
+:help DI/DrawIt	显示帮助
+:bn			切换到前一个buff，已打开的文件
+:bp			切换到后一个buff，已打开的文件
+za/zR/zM		代码折叠操作
+# ------------------------------------------------------------------
+# 用 ctags 进行查找，鼠标放在待查找的片段上
+<C-]> 或 g]		即显示在当前 ctags 中查找匹配的结果类表(并压入查找栈)
+:tn或:tnext		匹配列表的下一项
+:tp或:tprevious	匹配列表的上一项
+<C-t>			返回到查找前的地方，返回到上一个标签
+<C-o>			放回到查找前的地方，上次光标停留的地方
+<C-i>			再次到上一次查找的地方，或再进行一次查找操作
+# ------------------------------------------------------------------
+# 书签简要说明
+独立标签由 a～zA～Z 构成，有效字符 1/2 个
+同一个文件中的 不同独立书签名 中 不能包含相同字符
+分类标签共10种，有效字符 1个(键盘区10个数字，以其字符形式显示)
+分类书签有效字符集是： 1!  2@  3#  4$  5%  6^  7&  8*  9(  0)
+分类书签和独立书签在不同的命名空间中，独立书签可保存，分类书签不可保存
+# ------------------------------------------------------------------
+# 书签管理插 signature 使用快捷键
+# ------------------------------------------------------------------
+m/           Open location list and display marks from current buffer
+# ------------------------------------------------------------------
+mX           Toggle mark 'X' and display it in the leftmost column
+m,           Place the next available mark
+m.           If no mark on line, place the next available mark. Otherwise,
+             remove (first) existing mark.
+# ------------------------------------------------------------------
+dmX          Remove mark 'X' where x is a-zA-Z
+m-           Delete all marks from the current line
+m<Space>     Delete all marks from the current buffer
+# ------------------------------------------------------------------
+]`           Jump to next mark
+[`           Jump to prev mark
+]'           Jump to start of next line containing a mark
+['           Jump to start of prev line containing a mark
+# ------------------------------------------------------------------
+`]           Jump by alphabetical order to next mark
+`[           Jump by alphabetical order to prev mark
+']           Jump by alphabetical order to start of next line having a mark
+'[           Jump by alphabetical order to start of prev line having a mark
+# ------------------------------------------------------------------
+m[0-9]       Toggle the corresponding marker !@#$%^&*()
+m<S-[0-9]>   Remove all markers of the same type
+# ------------------------------------------------------------------
+m<BS>        Remove all markers
+# ------------------------------------------------------------------
+]-           Jump to next line having a marker of the same type
+[-           Jump to prev line having a marker of the same type
+# ------------------------------------------------------------------
+]=           Jump to next line having a marker of any type
+[=           Jump to prev line having a marker of any type
+# ------------------------------------------------------------------
+m?           Open location list and display markers from current buffer
+# ------------------------------------------------------------------
+# 移动跳转
+0	到 行首
+$	到 行尾
+y	复制
+p	粘贴
+G	到 文件尾
+gg	到 文件首
+za	打开/关闭 当前折叠
+zM	关闭 所有折叠
+zR	打开 所有折叠
+<C-]>  跳到tag定义处，并入栈
+<C-t>  跳回，用于ctags，放回上次光标停留处
+<C-o>  跳回，用于cscope，放回至上一个标签
+<C-i>  再跳回，用于cscope和ctags
+# ------------------------------------------------------------------
+# 自定义
+# ------------------------------------------------------------------
+<leader> es		Vim工作环境保存快捷键
+<leader> er		Vim工作环境恢复快捷键
+# ------------------------------------------------------------------
+<Leader> pa		定义快捷键在结对符之间跳转，助记pair
+# ------------------------------------------------------------------
+<leader> ift		插入文件头
+<leader> ift		更新文件头
+# ------------------------------------------------------------------
+<leader> swm		显示浏览窗口
+# ------------------------------------------------------------------
+<Leader> ch		切换源/头文件
+<Leader> if		打开指定头文件
+# ------------------------------------------------------------------
+<leader> bn		切换到前一个buff，已打开的文件
+<leader> bb		切换到后一个buff，已打开的文件
+# ------------------------------------------------------------------
+# 鼠标点击显示的 buff，并且按下 d 键可删除此 buff
+# 鼠标点击某 buff，按下s键同时垂直显示此 buff 窗口
+# 鼠标点击某 buff，按下v键同时水平显示此 buff 窗口
+<Leader> mb		新版MiniBuff插件触发控制
+# ------------------------------------------------------------------
+<Leader> fl		显示工程文件列表窗口，速记：file list
+# ------------------------------------------------------------------
+<Leader> ig		缩进可视化开关（插件默认配置）
+# ------------------------------------------------------------------
+<leader> tl		显示/关闭 当前文件tags在左侧窗口
+# ------------------------------------------------------------------
+<Leader> Rs		不确认非整词(R不确认，r确认，s[segment]非整词，w[word]整词)
+<Leader> Rw		不确认整词
+<Leader> rs		确认非整词
+<Leader> rw		确认整词
+# ------------------------------------------------------------------
+<Leader> ud		GunDo插件可视化出发开关
+# ------------------------------------------------------------------
+<leader><leader> cc		注释选中行(Virual模式下,下同)，其前可跟数字表示要注释的行数
+<leader><leader> cn		递归注释,同 cc,选中的行若已经注释,则再次注释
+<leader><leader> c<space>	触发注释功能,选中行的首行注释,则全部取消注释;选中的首行未注释,则全部注释
+<leader><leader> cm		使用 /**/ 形式的注释
+<leader><leader> ci		检查选中每行,取反(注释的行取消注释,未注释的行进行注释)
+<leader><leader> cs		使用 /**/ 形式的注释,并且保持对其,多行注释每行加 '* '
+<leader><leader> cy		先复制选中行,然后进行注释,同 cc
+<leader><leader> c$		注释当前行: 从光标位置到行尾部分
+<leader><leader> cA
+<leader><leader> ca
+<leader><leader> cl
+<leader><leader> cb
+<leader><leader> cu		取消注释，其前可跟数字表示要取消注释的行数
+# ------------------------------------------------------------------
+<leader><tab>		代码模板补全(插入模式下)
+# ------------------------------------------------------------------
+<leader>PP		插件 prodef 可由打开的 A.h 头文件类声明写出对应.cpp定义模板(默认映射)
+# ------------------------------------------------------------------
+<Leader> nw		依次遍历子窗口
+<Leader> lw		跳转至 右 方的窗口
+<Leader> hw		跳转至 左 方的窗口
+<Leader> kw		跳转至 上 方的窗口
+<Leader> jw		跳转至 下 方的窗口
+# ------------------------------------------------------------------
+<leader> gg		指定文件中 搜索 光标选定符号，grep插件
+<leader> gr		指定文件中 递归 搜索光标选定符号，grep插件
+<leader> gb		在已经打开buffer中 搜索 光标选定符号，grep插件
+<Leader> sr		打开/关闭搜索结果匹配窗口，ctrlsf插件，速记：show result
+<Leader> sp		指定文件中 搜索 光标选定字符串，ctrlsf插件，速记：search project
+# ------------------------------------------------------------------
+# cscope 使用 cs 搜索
+<leader> cs		cscope 全局查找符号
+<leader> cg		cscope 全局查找定义	
+<leader> cc		cscope 全局查找函数calls		
+<leader> ct		cscope 全局查找文本
+<leader> ce		cscope 用 grep 查找
+<leader> cf		cscope 打开头文件
+<leader> ci		cscope 全局查找包含[选中头文件]的文件
+<leader> cd		cscope 全局查找函数called
+# ------------------------------------------------------------------
+# cscope 使用 scs
+<leader> ss		cscope 全局查找符号
+<leader> sg		cscope 全局查找定义	
+<leader> sc		cscope 全局查找函数calls		
+<leader> st		cscope 全局查找文本
+<leader> se		cscope 用 grep 查找
+<leader> sf		cscope 打开头文件
+<leader> si		cscope 全局查找包含[选中头文件]的文件
+<leader> cd		cscope 全局查找函数called
+# ------------------------------------------------------------------
+# cscope 使用 vert
+<leader> vs		cscope 全局查找符号
+<leader> vg		cscope 全局查找定义	
+<leader> vc		cscope 全局查找函数calls		
+<leader> vt		cscope 全局查找文本
+<leader> ve		cscope 用 grep 查找
+<leader> vf		cscope 打开头文件
+<leader> vi		cscope 全局查找包含[选中头文件]的文件
+<leader> vd		cscope 全局查找函数called
+# ------------------------------------------------------------------
+# YCM
+<leader> df		跳到光标选中语义的定义处
+<leader> dc		跳到光标选中语义的声明处
+<leader> /		YCM补全引擎(插入模式)(插入模式下)
+# ------------------------------------------------------------------
+<leader>smd		针对当前编辑的 Markdown 文本，在 firefox 中开启即时预览页面

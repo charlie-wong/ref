@@ -1,0 +1,15 @@
+# git 自定义别名
+  ss   = status
+  sc   = show --name-only
+  ci   = commit
+  ca   = commit --amend
+  cm   = commit -m
+  co   = checkout
+  ba   = branch --all
+  df   = diff
+  dc   = diff --cached
+  rs   = reset HEAD --
+  lg   = log --graph --decorate --pretty=oneline --abbrev-commit --all
+  lp   = log -p
+  lf   = ls-files
+  li   = ls-files -o -i --exclude-standard
